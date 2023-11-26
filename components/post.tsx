@@ -1,22 +1,26 @@
-import ms from 'ms'
-import useSWR from 'swr'
+import ms from "ms";
+// import useSWR from 'swr'
+import { Button, Text } from "@vercel/examples-ui";
+import Image from "next/image";
 
 interface DataProps {
-  id: number
-  title: string
-  by: string
-  time: number
-  score: number
-  descendants: number
-  fetchedAt: number
+  _id: string;
+  companyName: string;
+  title: string;
+  location: string;
+  imageUrl: string;
+  type: string;
+  salary: string;
+  redirectLink: string;
+  requiredExperience: string;
+  skills: string;
+  createdAt: string;
+  updatedAt: string;
+  count: number;
 }
 
-export default function Post({ interval }: { interval: string }) {
-  const { data } = useSWR<DataProps>(`/api/data/${interval}`, (url) =>
-    fetch(url).then((res) => res.json())
-  )
-
-  if (!data)
+export default function Post({ job }: { job: DataProps }) {
+  if (!job._id)
     return (
       <div className="flex justify-between items-center border border-gray-100 shadow-md rounded-lg p-5">
         <div className="grid gap-3">
@@ -25,57 +29,53 @@ export default function Post({ interval }: { interval: string }) {
         </div>
         <div className="bg-gray-200 animate-pulse rounded-md w-28 h-4" />
       </div>
-    )
+    );
 
-  const { id, title, by, time, score, descendants, fetchedAt } = data || {}
+  const {
+    _id,
+    companyName,
+    createdAt,
+    location,
+    redirectLink,
+    requiredExperience,
+    salary,
+    skills,
+    title,
+    type,
+    updatedAt,
+  } = job || {};
   return (
-    <div className="flex justify-between items-center border border-gray-100 shadow-md rounded-lg p-5">
-      <div className="grid gap-2">
-        <a
-          href={`https://news.ycombinator.com/item?id=${id}`}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <h3 className="text-gray-600 hover:text-black font-semibold transition-all">
-            {title}
-          </h3>
-        </a>
-        <div className="flex space-x-1 text-gray-500 text-sm">
-          <a
-            href={`https://news.ycombinator.com/item?id=${id}`}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="hover:underline hover:text-gray-800 transition-all"
-          >
-            {score} {score === 1 ? 'point' : 'points'}
-          </a>
-          <p>by</p>
-          <a
-            href={`https://news.ycombinator.com/user?id=${by}/`}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="hover:underline hover:text-gray-800 transition-all"
-          >
-            {by}
-          </a>
-          <p>{timeAgo(time * 1000)}</p>
-          <p>|</p>
-          <a
-            href={`https://news.ycombinator.com/item?id=${id}`}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="hover:underline hover:text-gray-800 transition-all"
-          >
-            {descendants} {descendants === 1 ? 'comment' : 'comments'}
-          </a>
+    <div className="flex flex-col justify-evenly border border-gray-100 shadow-md rounded-lg p-5 min-h-max">
+      <div className="grid">
+        <div className="flex flex-col py-5 text-gray-500 text-sm">
+          {/* <Image src={imageUrl} alt={companyName} height={100} width={100} /> */}
+          <Text>Company Name : {companyName}</Text>
+          <Text>Title : {title}</Text>
+          <Text>Salary : {salary}</Text>
+          <Text>Skills : {skills}</Text>
+          <Text>Type : {type}</Text>
+          <Text>Experice : {requiredExperience}</Text>
+          <Text>Location : {location}</Text>
         </div>
       </div>
-      <p className="text-gray-500 text-sm">fetched {timeAgo(fetchedAt)}</p>
+      <div>
+        <Button className="bg-transparent">
+          <a href={`${redirectLink}`} target="_blank" rel="noreferrer noopener">
+            <h3 className="text-gray-600 hover:text-black font-semibold transition-all">
+              Apply Here For The Job Application
+            </h3>
+          </a>
+        </Button>
+      </div>
+      <div className="space-x-1 text-gray-500 text-sm flex justify-end">
+        <p>Posted : {timeAgo(createdAt)} | </p>
+        <p className="text-gray-500 text-sm">Fetched {timeAgo(updatedAt)}</p>
+      </div>
     </div>
-  )
+  );
 }
 
-const timeAgo = (time: number): string => {
-  if (!time) return 'Never'
-  return `${ms(Date.now() - new Date(time).getTime())} ago`
-}
+const timeAgo = (time: number | string): string => {
+  if (!time) return "Never";
+  return `${ms(Date.now() - new Date(time).getTime())} ago`;
+};
